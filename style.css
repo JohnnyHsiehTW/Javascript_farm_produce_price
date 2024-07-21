@@ -188,3 +188,21 @@ body {
     top: 9px;
     right: -15px;
 }
+
+.sortLink {
+    color: black;
+}
+
+.sortBtn:hover,
+.sortBtn:active {
+    color: #899e39;
+}
+
+.keyword {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.btnActive {
+    background: #f8d45a;
+}
