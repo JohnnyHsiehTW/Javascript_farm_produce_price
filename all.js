@@ -4,10 +4,16 @@ let data = [];
 axios.get('https://data.moa.gov.tw/Service/OpenData/FromM/FarmTransData.aspx?IsTransData=1&UnitId=037')
 .then(function (response) {
     data = response.data;
+    renderData(data);
 });
 
-// 渲染網頁
 const showList = document.getElementById('showList');
+showList.innerHTML = 
+            `<tr>
+                <td colspan="7" class="text-center p-3">資料載入中...</td>
+            </tr>`
+
+// 渲染網頁
 function renderData(data) {
     let str = '';
     data.forEach(function(item){
@@ -48,9 +54,9 @@ searchInput.addEventListener('keypress', function(e) {
     };
 });
 
+const showKeyword = document.getElementById('showKeyword');
 function search() {
-    const showKeyword = document.getElementById('showKeyword');
-    if (searchInput.value !== '') {
+    if (searchInput.value.trim() !== '') {
         showKeyword.innerHTML = `<p class="keyword">查看「${searchInput.value}」的比價結果</p>`
         newData = data.filter(function (item) {
                 return item.作物名稱.includes(searchInput.value);
@@ -67,6 +73,7 @@ function search() {
         }
         else {
             alert('請輸入作物名稱') // 若查無資料顯示字串
+            return
         };
     // 移除filterBtn btnActive
     let filterBtnsAera = document.querySelectorAll('.filterBtn')
@@ -83,9 +90,15 @@ function search() {
 const filterBtns = document.getElementById('filterBtns');
 filterBtns.addEventListener('click', function(e) {
     if (e.target.nodeName == 'BUTTON') {
-        newData = data.filter(function(i) {
+        // 設定條件區別全部以及有種類代碼的篩選條件
+        if (e.target.dataset.type === "N04" || e.target.dataset.type === "N05" || e.target.dataset.type === "N06") {
+            newData = data.filter(function(i) {
             return i.種類代碼 == e.target.dataset.type;
         });
+        // 全部
+        } else {
+            newData = data;
+        }
         renderData(newData);
 
         // filterBtn btnActive & remove
@@ -95,6 +108,8 @@ filterBtns.addEventListener('click', function(e) {
         })
         e.target.classList.add('btnActive')
     }
+    
+    showKeyword.innerHTML = ``
 });
 
 
@@ -120,31 +135,41 @@ sortBtn.addEventListener('click',function (e) {
         }
         renderData(newData);
     }
-    // sortBtn active
 });
 
 
 // 下拉選單排序
-const select = document.getElementById('js-select');
-select.addEventListener('change', function (e) {
+const wrap = document.querySelector('.wrap');
+wrap.addEventListener('change', function (e) {
     const sortPrice = e.target.value
-    if (sortPrice == e.target.value) {
-        newData.sort(function (a, b) {
-            return b[sortPrice] - a[sortPrice];
-        })
-    }
-    renderData(newData); 
-});
+        if (sortPrice == e.target.value) {
+            newData.sort(function (a, b) {
+                return b[sortPrice] - a[sortPrice];
+            })
+        }
+        renderData(newData); 
+    });
+
+// const select = document.getElementById('js-select');
+// select.addEventListener('change', function (e) {
+//     const sortPrice = e.target.value
+//     if (sortPrice == e.target.value) {
+//         newData.sort(function (a, b) {
+//             return b[sortPrice] - a[sortPrice];
+//         })
+//     }
+//     renderData(newData); 
+// });
 // 下拉選單排序(手機版)
-const selectMobile = document.getElementById('js-moblie-select');
-selectMobile.addEventListener('change', function (e) {
-    const sortPrice = e.target.value
-    if (sortPrice == e.target.value) {
-        newData.sort(function (a, b) {
-            return b[sortPrice] - a[sortPrice];
-        })
-    }
-    renderData(newData); 
-});
+// const selectMobile = document.getElementById('js-moblie-select');
+// selectMobile.addEventListener('change', function (e) {
+//     const sortPrice = e.target.value
+//     if (sortPrice == e.target.value) {
+//         newData.sort(function (a, b) {
+//             return b[sortPrice] - a[sortPrice];
+//         })
+//     }
+//     renderData(newData); 
+// });
 
 
